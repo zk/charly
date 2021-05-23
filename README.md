@@ -1,9 +1,7 @@
 # Charly
 
-![Charly Logo](https://raw.githubusercontent.com/zk/charly/main/app/static/img/charly-logo-right.svg)
-
 <img src="https://raw.githubusercontent.com/zk/charly/main/app/static/img/charly-logo-right.svg"
- alt="Charly logo" align="right" />
+ alt="Charly logo" align="right" width="200" />
 
 Charly is a modern web framework for Clojure/Script
 
