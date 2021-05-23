@@ -11,8 +11,10 @@ Charly is a modern web framework for Clojure/Script
 ### Checklist
 * ✅ CLJS source
 * ✅ Static files (see `./static`)
-* ✅ Dynamic CSS (see `./src/cljc/css_rules.cljc`)
-
+* ✅ Dynamic CSS
+* ✅ Routes
+* ✅ Templates
+* ⬜️ charly.edn
 
 ## Options
 
