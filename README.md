@@ -1,6 +1,8 @@
 # Charly
 
-Charly is a modern web framework in the vein of Next.js.
+![Charly Logo](https://raw.githubusercontent.com/zk/charly/main/app/static/img/charly-logo-right.svg)
+
+Charly is a modern web framework for Clojure/Script
 
 
 ## Hot reload all the things
