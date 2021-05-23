@@ -1,0 +1,10 @@
+# Charly
+/build/prod-cljs
+/build/dev
+
+# Clojure
+.cpcache
+.nrepl-port
+
+# OSX
+.DS_Store

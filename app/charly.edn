@@ -1,0 +1,16 @@
+{:id "charly-actual"
+ :client-routes fyi.charly.routes/routes
+ :default-page-template fyi.charly.templates/main
+ :css-preamble ["resources/css/reset.css"
+                "resources/css/bootstrap-grid.min.css"]
+ :css-files [{:rules fyi.charly.css-rules/rules
+              :path "app.css"}]
+ :client-cljs {:figwheel {}
+               :compiler
+               {:main fyi.charly.browser.entry
+                :recompile-dependents true
+                :parallel-build true
+                :hashbang false}}
+
+ :client-cicd {:git-user-email "zachary.kim@gmail.com"
+               :git-user-name "zk"}}

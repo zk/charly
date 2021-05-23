@@ -1,0 +1,21 @@
+{:paths ["../../rx-lib/src/clj"
+         "../../rx-lib/src/cljc"
+         "../../rx-lib/src/cljs"
+         "../../rx-lib/src/cljs-browser"
+         "../../rx-lib/src/cljc"
+         ;; charly
+         "../src/clj"
+
+         ;; app
+         "src/cljs-browser"
+         "src/cljc"
+         ]
+ :deps {zk/rx-lib {:git/url "https://github.com/zk/rx-lib"
+                   :sha "3c6c48ffe6f8ca667236ec6225c2c03cc0d94a30"}}
+ 
+ :aliases {:charly
+           {:main-opts
+            ["-m" "charly.main"]}
+           :build-web
+           {:main-opts
+            ["-m" "charly.main" "-b"]}}}
