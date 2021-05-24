@@ -104,9 +104,18 @@
                     {:runtime-env :dev}))]
         (cli/gen-from-routes env dev-output-path)))))
 
+(defn handle-templates-change [{:keys [dev-output-path project-root client-routes] :as env} nss]
+  (let [tpl-nss (->> nss
+                     (filter #(st/template-ns-sym? env %))
+                     vec)]
+    (println "Tpl namespces changed: " (pr-str tpl-nss))
+    (when (> (count tpl-nss) 0)
+      (st/after-templates-changed env))))
+
 (defn handle-changed-nss [env nss]
   (handle-css-change env nss)
-  (handle-routes-change env nss))
+  (handle-routes-change env nss)
+  (handle-templates-change env nss))
 
 (defn source-files [{:keys [project-root debug?] :as env}]
   (let [src-path (c/concat-paths
@@ -141,3 +150,11 @@
 
   (reset! !watcher
     (start-watchers env)))
+
+
+(comment
+
+  (start-watchers!
+    (config/read-env "./charly.edn"))
+
+  )

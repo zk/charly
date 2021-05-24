@@ -9,4 +9,3 @@
   {:render
    (fn []
      [:div "index"])})
-

@@ -7,14 +7,11 @@
             [clojure.java.shell :as sh]
             [clojure.string :as str]
             [reitit.core :as rei]
-            [rum.server-render :as sr]))
+            [rum.server-render :as sr]
+            [figwheel.repl :as fr]))
 
 (defn env->tpl-config [env]
   (let [{:keys [id]} env]))
-
-(defn template-nss [tpl-cfg])
-
-(defn handle-template-change [tpl-cfg tpl-sym])
 
 (defn create-directory [path]
   (.mkdirs (io/file path)))
@@ -184,6 +181,27 @@
            doall))))
 
 
+(defn template-nss [env]
+  (concat
+    (when-let [sym (:default-page-template env)]
+      [(symbol (namespace sym))])))
+
+(defn template-ns-sym? [env sym]
+  (get
+    (-> env
+        template-nss
+        set)
+    sym))
+
+(defn handle-template-change [tpl-cfg tpl-sym]
+  (println "Template changed" tpl-sym))
+
+(defn after-templates-changed [env]
+  (fr/evaluate 
+    (fr/repl-env)
+    "location.reload()"))
+
+
 (comment
 
   (ks/spy (let [env (c/read-env "./charly.edn")]
@@ -192,4 +210,19 @@
               (c/client-dev-build-dir env))))
 
 
+  (fr/evaluate 
+    (fr/repl-env)
+    "location.reload()")
+
+  
+
+  (template-nss
+    (c/read-env "./charly.edn"))
+
+
+  (template-ns-sym?
+    (c/read-env "./charly.edn")
+    'fyi.charly.templates)
+
   )
+
