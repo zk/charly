@@ -4,12 +4,7 @@
          "../../rx-lib/src/cljs-browser"
          "../../rx-lib/src/cljc"
          ;; charly
-         "../src/clj"
-
-         ;; app
-         "src/cljs-browser"
-         "src/cljc"
-         ]
+         "src/clj"]
  :deps {zk/rx-lib {:git/url "https://github.com/zk/rx-lib"
                    :sha "2959c431cb1fe1e82d975f46769b1ad9121b4223"}}
  
