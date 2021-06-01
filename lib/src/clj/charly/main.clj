@@ -29,7 +29,11 @@
 (defn start-dev! [& [{config-path :config
                       :keys [skip-nrepl verbose]}]]
   (tr/set-refresh-dirs "./src")
-  (tr/refresh)
+  (let [res (tr/refresh)]
+    (when (ks/error? res)
+      (println "Error on initial refresh")
+      (ks/pp res)
+      (System/exit 1)))
   (let [config (merge
                  (cli/read-config (or config-path "./charly.edn"))
                  {:runtime-env :dev
@@ -51,7 +55,11 @@
   (println "\n")
   (println "Generating production build")
   (tr/set-refresh-dirs "./src")
-  (tr/refresh)
+  (let [res (tr/refresh)]
+    (when (ks/error? res)
+      (println "Error on initial refresh")
+      (ks/pp res)
+      (System/exit 1)))
   (let [config (merge
                  (cli/read-config (or config-path "./charly.edn"))
                  {:runtime-env :prod})]
@@ -66,7 +74,11 @@
   (println "\n")
   (println "Generating production API build")
   (tr/set-refresh-dirs "./src")
-  (tr/refresh)
+  (let [res (tr/refresh)]
+    (when (ks/error? res)
+      (println "Error on initial refresh")
+      (ks/pp res)
+      (System/exit 1)))
   (let [config (merge
                  (cli/read-config (or config-path "./charly.edn"))
                  {:runtime-env :dev})]

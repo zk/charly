@@ -25,7 +25,7 @@
   (println "* Generating html files from routes")
   (let [{:keys [routes-fn client-routes]} env]
     (if (anom/? routes-fn)
-      (println ! "Couldn't resolve routes fn" client-routes)
+      (println ! "Couldn't resolve routes fn" client-routes routes-fn)
       (let [routes-res (st/generate-routes env output-path)]
         (if (anom/? routes-res)
           (do
