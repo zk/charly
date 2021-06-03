@@ -7,9 +7,14 @@
             [clojure.java.io :as io]
             [hawk.core :as hawk]
             [charly.tools-repl :as tr]
+            [jansi-clj.core :as jc]
+            [clojure.string :as str]
             [clojure.core.async
              :as async
              :refer [go <! timeout chan close! put!]]))
+
+(def ! (jc/red (jc/bold "!")))
+(def . (jc/red "."))
 
 (defn create-directory [path]
   (.mkdirs (io/file path)))
@@ -118,6 +123,24 @@
   (handle-routes-change env nss)
   (handle-templates-change env nss))
 
+(defn log-error [env e]
+  (let [{:keys [cause via trace]} (Throwable->map e)]
+    (println . cause)
+    (println
+      (->> (str/split (ks/pp-str via) #"\n")
+           (map #(str . " " %))
+           (interpose "\n")
+           (apply str)))))
+
+(defn handle-source-files-changed [env]
+  (tr/set-refresh-dirs "./src")
+  (let [nss (tr/refresh)]
+    (if (ks/error? nss)
+      (do
+        (println ! "Error refreshing")
+        (log-error env nss))
+      (handle-changed-nss env nss))))
+
 (defn source-files [{:keys [project-root debug?] :as env}]
   (let [src-path (c/concat-paths
                    [project-root "src"])]
@@ -127,14 +150,7 @@
                      (not (.startsWith (.getName file) ".#"))))
       :handler (fn [ctx {:keys [kind file] :as action}]
                  (try
-                   (tr/set-refresh-dirs "./src")
-                   (let [nss (tr/refresh)]
-                     (if (ks/error? nss)
-                       (do
-                         (println "Error refreshing...")
-                         (ks/pp nss))
-                       
-                       (handle-changed-nss env nss)))
+                   (handle-source-files-changed env)
                    (catch Exception e
                      (println "Exception handling filesystem change" (pr-str action))
                      (prn e))))}]))
