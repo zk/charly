@@ -30,3 +30,11 @@ Charly is a modern web framework for Clojure/Script
 
 * [Figma](https://www.figma.com/file/9sfOfkNHPSiMKCyLS6w2KJ/Charly?node-id=0%3A1&viewport=655%2C505%2C1)
 
+
+
+## Disbling Namespace Refresh
+
+You might want to disable namespace refresh of clj and cljc files if you're working directly against the repl via your IDE's repl load commands.
+
++ Globally: Add `:disable-refresh-namespaces? true` to `charly.edn`. This prop is hot reloaded.
++ Namespace local: use (charly.tools-repl/disable-reload!) in the namespace (or pass the namespace as the first argument). charly.tools-repl/enable-reload! to enable reloading.

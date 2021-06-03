@@ -66,20 +66,29 @@
                            (println "Exception handling filesystem change" (pr-str action))
                            (prn e)))))))}]))
 
+(declare start-watchers!)
+
+(defn handle-config-file-change [!last-env config-path]
+  (let [last-env @!last-env
+        next-env (config/config->env
+                   (merge
+                     (ks/edn-read-string (slurp config-path))
+                     {:runtime-env :dev}))
+        _ (reset! !last-env next-env)]
+    (println gbs "Config file changed")
+    (cli/compile-dev next-env)
+    (start-watchers! next-env)))
+
 (defn config-file [{:keys [project-root] :as env}]
   (let [config-file-path (c/concat-paths
                            [project-root "charly.edn"])
         !last-env (atom env)]
+    (when (:disable-refresh-namespaces? env)
+      (println gbs "Refreshing namespaces disabled"))
     [{:paths [config-file-path]
       :handler (fn [ctx {:keys [kind file] :as action}]
                  (try
-                   (let [last-env @!last-env
-                         next-env (config/config->env
-                                    (merge
-                                      (ks/edn-read-string (slurp file))
-                                      {:runtime-env :dev}))
-                         _ (reset! !last-env next-env)]
-                     (cli/compile-dev next-env))
+                   (handle-config-file-change !last-env (.getAbsolutePath file))
                    (catch Exception e
                      (println "Exception handling filesystem change" (pr-str action))
                      (prn e))))}]))
@@ -134,15 +143,16 @@
            (apply str)))))
 
 (defn handle-source-files-changed [env]
-  (tr/set-refresh-dirs "./src")
-  (let [nss (tr/refresh)]
-    (if (ks/error? nss)
-      (do
-        (println ! "Error refreshing")
-        (log-error env nss))
-      (do
-        (println gbs "Refreshed namespaces" nss)
-        (handle-changed-nss env nss)))))
+  (when (not (:disable-refresh-namespaces? env))
+    (tr/set-refresh-dirs "./src")
+    (let [nss (tr/refresh)]
+      (if (ks/error? nss)
+        (do
+          (println ! "Error refreshing")
+          (log-error env nss))
+        (when (not (empty? nss))
+          (println gbs "Refreshed namespaces" nss)
+          (handle-changed-nss env nss))))))
 
 (defn source-files [{:keys [project-root debug?] :as env}]
   (let [src-path (c/concat-paths
@@ -181,6 +191,7 @@
 
   (start-watchers!
     (config/read-env "./charly.edn"))
+  
 
   )
 

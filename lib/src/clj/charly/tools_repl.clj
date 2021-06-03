@@ -9,7 +9,8 @@
 (ns ^{:author "Stuart Sierra"
       :doc "REPL utilities for working with namespaces"}
   charly.tools-repl
-  (:require [clojure.tools.namespace.track :as track]
+  (:require [rx.kitchen-sink :as ks]
+            [clojure.tools.namespace.track :as track]
             [clojure.tools.namespace.dir :as dir]
             [clojure.tools.namespace.find :as find]
             [clojure.tools.namespace.reload :as reload]))
@@ -125,6 +126,10 @@
   Warning: Aliases to reloaded namespaces will break."
   ([] (disable-reload! *ns*))
   ([namespace] (alter-meta! namespace assoc ::load false)))
+
+(defn enable-reload!
+  ([] (enable-reload! *ns*))
+  ([namespace] (alter-meta! namespace assoc ::load true)))
 
 (defn refresh
   "Scans source code directories for files which have changed (since
