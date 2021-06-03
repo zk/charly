@@ -13,6 +13,7 @@
   (:refer-clojure :exclude [compile]))
 
 (def ! (red (bold "!")))
+(def gbs (green (bold "*")))
 
 (defn read-config [path]
   (let [config (config/read-config path)]
@@ -22,7 +23,7 @@
     config))
 
 (defn gen-from-routes [env output-path]
-  (println "* Generating html files from routes")
+  (println gbs "Generating html files from routes")
   (let [{:keys [routes-fn client-routes]} env]
     (if (anom/? routes-fn)
       (println ! "Couldn't resolve routes fn" client-routes routes-fn)
@@ -32,26 +33,26 @@
             (println ! "Error generating route html")
             (println "  " routes-res))
           (doseq [{:keys [output-path]} routes-res]
-            (println "  Wrote" output-path)))))))
+            (println " " output-path)))))))
 
 (defn gen-css [env output-path minify?]
-  (println "* Generating css")
+  (println gbs "Generating css")
   (let [paths (cmp/generate-css env output-path minify?)]
     (doseq [path paths]
-      (println "  Wrote" path))))
+      (println " " path))))
 
 (defn compile-dev [env]
   (let [{:keys [dev-output-path]} env]
-    (println "* Copying static files")
+    (println gbs "Copying static files")
     (let [copy-res (st/copy-static env dev-output-path)]
       (doseq [{:keys [to-file]} copy-res]
-        (println "  Wrote" (.getPath to-file)))
+        (println " " (.getPath to-file)))
       (gen-from-routes env dev-output-path)
       (gen-css env dev-output-path false))))
 
 (defn compile-prod [env]
   (let [{:keys [prod-output-path]} env]
-    (println "* Copying static files")
+    (println gbs "Copying static files")
     (let [copy-res (st/copy-static env prod-output-path)]
       (doseq [{:keys [to-file]} copy-res]
         (println "  Wrote" (.getPath to-file)))
@@ -62,27 +63,27 @@
 
 (defn compile-prod-api [env]
   (let [{:keys [prod-output-path]} env]
-    (println "* Building prod api")
+    (println gbs "Building prod api")
     (ns/compile-prod-api env)))
 
 (defn deploy-prod-api [env]
   (let [{:keys [prod-output-path]} env]
-    (println "* Deploying prod api")
+    (println gbs "Deploying prod api")
     (ns/deploy-prod-api env)))
 
 (defn start-http-server! [env]
-  (println "* Starting dev server")
+  (println gbs "Starting dev server")
   (hs/start-http-server! env))
 
 (defn start-nrepl-server! [env]
-  (println "* Starting nrepl server")
+  (println gbs "Starting nrepl server")
   (nr/start-clj-repl env))
 
 (defn start-figwheel-server! [env]
   (cmp/start-figwheel-server! env))
 
 (defn start-node-dev! [env]
-  (println "* Start node proc")
+  (println gbs "Start node proc")
   (ns/start-figwheel-server! env)
   (ns/start-node-proc! env))
 

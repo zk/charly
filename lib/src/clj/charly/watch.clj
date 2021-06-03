@@ -15,6 +15,7 @@
 
 (def ! (jc/red (jc/bold "!")))
 (def . (jc/red "."))
+(def gbs (jc/green (jc/bold "*")))
 
 (defn create-directory [path]
   (.mkdirs (io/file path)))
@@ -139,7 +140,9 @@
       (do
         (println ! "Error refreshing")
         (log-error env nss))
-      (handle-changed-nss env nss))))
+      (do
+        (println gbs "Refreshed namespaces" nss)
+        (handle-changed-nss env nss)))))
 
 (defn source-files [{:keys [project-root debug?] :as env}]
   (let [src-path (c/concat-paths
@@ -180,3 +183,4 @@
     (config/read-env "./charly.edn"))
 
   )
+
