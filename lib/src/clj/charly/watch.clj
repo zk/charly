@@ -108,7 +108,8 @@
   (let [tpl-nss (->> nss
                      (filter #(st/template-ns-sym? env %))
                      vec)]
-    (println "Tpl namespces changed: " (pr-str tpl-nss))
+    (when-not (empty? tpl-nss)
+      (println "Tpl namespces changed: " (pr-str tpl-nss)))
     (when (> (count tpl-nss) 0)
       (st/after-templates-changed env))))
 
@@ -128,7 +129,12 @@
                  (try
                    (tr/set-refresh-dirs "./src")
                    (let [nss (tr/refresh)]
-                     (handle-changed-nss env nss))
+                     (if (ks/error? nss)
+                       (do
+                         (println "Error refreshing...")
+                         (ks/pp nss))
+                       
+                       (handle-changed-nss env nss)))
                    (catch Exception e
                      (println "Exception handling filesystem change" (pr-str action))
                      (prn e))))}]))

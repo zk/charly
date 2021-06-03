@@ -28,16 +28,16 @@
 
 (defn start-dev! [& [{config-path :config
                       :keys [skip-nrepl verbose]}]]
-  (tr/set-refresh-dirs "./src")
-  (let [res (tr/refresh)]
-    (when (ks/error? res)
-      (println "Error on initial refresh")
-      (ks/pp res)
-      (System/exit 1)))
   (let [config (merge
                  (cli/read-config (or config-path "./charly.edn"))
                  {:runtime-env :dev
-                  :debug? verbose})]
+                  :debug? verbose})
+        {:keys [tools-repl-refresh-dirs]} config]
+    (apply tr/set-refresh-dirs tools-repl-refresh-dirs)
+    (let [res (tr/refresh)]
+      (when (ks/error? res)
+        (println "Error on initial refresh")
+        (ks/pp res)))
     (when-not (anom/? config)
       (let [env (config/config->env config)]
         (when verbose
@@ -49,7 +49,7 @@
         (when (start-node-dev? env)
           (cli/start-node-dev! env))
         (when-not skip-nrepl
-          (cli/start-nrepl-server! env))))))
+          (cli/start-nrepl-server! {}))))))
 
 (defn build-prod! [& [{config-path :config :keys [verbose]}]]
   (println "\n")
@@ -182,9 +182,3 @@
                                 (read-config "./resources/charly/test_site/charly.edn")
                                 {:runtime-env :dev})))
   (read-config "./resources/charly/test_site/charly_error.edn"))
-
-
-(comment
-
-  )
-
