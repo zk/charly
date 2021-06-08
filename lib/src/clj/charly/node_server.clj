@@ -7,6 +7,7 @@
             [me.raynes.conch :as conch]
             [clojure.java.io :as io]
             [figwheel.main.api :as fapi]
+            [figwheel.main :as fig]
             [cljs.build.api :as bapi]
             [charly.aws-lambda-deploy :as ld]
             [clojure.string :as str]))
@@ -38,12 +39,12 @@
   (:node-proc opts))
 
 (defn stop-node-proc! [{:keys [id]}]
-  (let [id "cljs-api-repl"])
+  (let [id "cljs-api-repl"]
     (when-let [proc (get-in @!servers [id :node-proc])]
       (ks/pr "Destorying node proc... ")
       (cl/destroy proc)
       (ks/pn "Done.")
-      (swap! !servers assoc-in [id :node-proc] nil)))
+      (swap! !servers assoc-in [id :node-proc] nil))))
 
 (defn start-node-proc! [{:keys [id] :as opts}]
   (let [id "cljs-api-repl"
@@ -71,6 +72,7 @@
     (try
       (fapi/stop id)
       (catch Exception e
+        (prn e)
         #_(ks/pn "Server already stopped")))))
 
 (defn watch-dirs [{:keys [project-root]}]
@@ -216,11 +218,14 @@
 
 (defn start-figwheel-server! [{:keys [client-cljs] :as opts}]
   (let [id "charly-api-cljs"]
-    (stop-figwheel-server! client-cljs)
-    (fapi/start
-      (figwheel-opts opts)
-      {:id id
-       :options (figwheel-compiler-opts opts)})))
+    #_(stop-figwheel-server! client-cljs)
+    (try
+      (fapi/start
+        (figwheel-opts opts)
+        {:id id
+         :options (figwheel-compiler-opts opts)})
+      (catch Exception e
+        (prn e)))))
 
 (defn compile-prod-api [env & [opts]]
   (compile-prod-cljs env opts)

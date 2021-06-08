@@ -110,6 +110,30 @@
 (defn api-repl []
   (fapi/cljs-repl "charly-api-cljs"))
 
+(defn load-env! [& [{config-path :config
+                      :keys [verbose]}]]
+  (let [config (merge
+                 (cli/read-config (or config-path "./charly.edn"))
+                 {:runtime-env :dev
+                  :debug? verbose})]
+    (if (anom/? config)
+      config
+      (config/config->env config))))
+
+(defn restart-api! [& [opts]]
+  (let [env (load-env! opts)]
+
+    (anom/throw-if-anom env)
+
+    (when (start-node-dev? env)
+      (cli/start-node-dev! env))))
+
+(comment
+
+  (restart-api!)
+
+  )
+
 (def cli-options
   [["-c" "--config CONFIG_PATH" "Path to charly config"]
    ["-s" "--skip-nrepl" "Skip starting nrepl server"]

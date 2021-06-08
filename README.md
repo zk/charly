@@ -23,7 +23,11 @@ Charly is a modern web framework for Clojure/Script
 * `:client-routes` -- Routes file for web frontend
 * `:client-cicd`
   * `:git-user-email`, `:git-user-name` -- used to generate the deploy script
+* `:disable-refresh-namespaces?` -- Disable clj / cljc namespace refreshing. Handy when refreshing a ns with errors
 
+## API Node Process
+
+To restart the api node process see `charly.main/restart-api!`. Also aliased into the `user` ns.
 
 
 ## Working on Charly
@@ -38,3 +42,5 @@ You might want to disable namespace refresh of clj and cljc files if you're work
 
 + Globally: Add `:disable-refresh-namespaces? true` to `charly.edn`. This prop is hot reloaded.
 + Namespace local: use (charly.tools-repl/disable-reload!) in the namespace (or pass the namespace as the first argument). charly.tools-repl/enable-reload! to enable reloading.
+
+
