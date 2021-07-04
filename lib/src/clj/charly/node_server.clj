@@ -7,7 +7,7 @@
             [me.raynes.conch :as conch]
             [clojure.java.io :as io]
             [figwheel.main.api :as fapi]
-            [figwheel.main :as fig]
+            [figwheel.main :as fmain]
             [cljs.build.api :as bapi]
             [charly.aws-lambda-deploy :as ld]
             [clojure.string :as str]))
@@ -218,21 +218,20 @@
 
 (defn start-figwheel-server! [{:keys [client-cljs] :as opts}]
   (let [id "charly-api-cljs"]
-    #_(stop-figwheel-server! client-cljs)
+    (stop-figwheel-server! client-cljs)
     (try
       (fapi/start
         (figwheel-opts opts)
         {:id id
          :options (figwheel-compiler-opts opts)})
       (catch Exception e
-        (prn e)))))
+        (fmain/start-builds id)))))
 
 (defn compile-prod-api [env & [opts]]
   (compile-prod-cljs env opts)
   (package-prod-cljs env opts))
 
 (defn deploy-prod-api [env & [opts]]
-  (println "Deploying lambda api")
   (compile-prod-cljs env opts)
   #_(copy-node-modules env opts)
   (install-node-modules env opts)

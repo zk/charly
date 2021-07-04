@@ -5,14 +5,13 @@
 
 (defonce !nrepl-server (atom nil))
 
-(defn start-clj-repl [env]
+(defn start-clj-repl [_]
   (let [nrepl-opts (nrepl/server-opts
                      {:middleware
                       '[cider.nrepl/cider-middleware
                         cider.piggieback/wrap-cljs-repl]})]
     (when @!nrepl-server
       (nrepl-server/stop-server @!nrepl-server))
-
 
     (let [server (nrepl/start-server nrepl-opts)]
       (reset! !nrepl-server server)

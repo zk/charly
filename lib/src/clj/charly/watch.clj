@@ -1,9 +1,8 @@
 (ns charly.watch
   (:require [rx.kitchen-sink :as ks]
-            [charly.compiler :as c]
             [charly.static-templates :as st]
             [charly.config :as config]
-            [charly.cli :as cli]
+            [charly.web :as web]
             [clojure.java.io :as io]
             [hawk.core :as hawk]
             [charly.tools-repl :as tr]
@@ -28,11 +27,11 @@
          (map (fn [{:keys [watch-paths] :as out}]
                 {:paths (->> watch-paths
                              (map (fn [watch-path]
-                                    (c/concat-paths
+                                    (config/concat-paths
                                       [project-root watch-path]))))
                  :handler (fn [ctx {:keys [kind file] :as action}]
                             (try
-                              (c/write-css-out
+                              (web/write-css-out
                                 (:http-root-path env)
                                 out
                                 (-> env :css :garden))
@@ -41,11 +40,11 @@
                                 (prn e))))})))))
 
 (defn static-dirs [{:keys [project-root dev-output-path]}]
-  (let [static-path (c/concat-paths
+  (let [static-path (config/concat-paths
                       [project-root "static"])]
     [{:paths [static-path]
       :handler (fn [ctx {:keys [kind file] :as action}]
-                 (let [fq-static-path (c/concat-paths
+                 (let [fq-static-path (config/concat-paths
                                         [(System/getProperty "user.dir") static-path])
                        to-file (st/to-file
                                  file
@@ -76,11 +75,11 @@
                      {:runtime-env :dev}))
         _ (reset! !last-env next-env)]
     (println gbs "Config file changed")
-    (cli/compile-dev next-env)
+    (web/compile-dev next-env)
     (start-watchers! next-env)))
 
 (defn config-file [{:keys [project-root] :as env}]
-  (let [config-file-path (c/concat-paths
+  (let [config-file-path (config/concat-paths
                            [project-root "charly.edn"])
         !last-env (atom env)]
     (when (:disable-refresh-namespaces? env)
@@ -100,7 +99,7 @@
     (doseq [{:keys [rules-ns-sym rules] :as css-spec} (:css-files env)]
       (when (get nss rules-ns-sym)
         (println "CSS changed, writing"
-          (c/write-css-out
+          (web/write-css-out
             dev-output-path
             (merge
               css-spec
@@ -111,13 +110,13 @@
 (defn handle-routes-change [{:keys [dev-output-path project-root client-routes] :as env} nss]
   (let [nss (set nss)]
     (when (get nss (symbol (namespace client-routes)))
-      (let [config-file-path (c/concat-paths
+      (let [config-file-path (config/concat-paths
                                [project-root "charly.edn"])
             env (config/config->env
                   (merge
                     (ks/edn-read-string (slurp config-file-path))
                     {:runtime-env :dev}))]
-        (cli/gen-from-routes env dev-output-path)))))
+        (web/gen-from-routes env dev-output-path)))))
 
 (defn handle-templates-change [{:keys [dev-output-path project-root client-routes] :as env} nss]
   (let [tpl-nss (->> nss
@@ -155,7 +154,7 @@
           (handle-changed-nss env nss))))))
 
 (defn source-files [{:keys [project-root debug?] :as env}]
-  (let [src-path (c/concat-paths
+  (let [src-path (config/concat-paths
                    [project-root "src"])]
     [{:paths [src-path]
       :filter (fn [_ {:keys [kind file]}]
