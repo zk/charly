@@ -196,6 +196,8 @@
 
   (cljs-api-repl)
 
+  (web-repl)
+
   (start-dev! {:config-path "charly.edn"})
 
   (build-prod! {:config-path "charly.edn"})

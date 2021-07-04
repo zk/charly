@@ -6,7 +6,7 @@
          ;; charly
          "src/clj"]
  :deps {zk/rx-lib {:git/url "https://github.com/zk/rx-lib"
-                   :sha "2959c431cb1fe1e82d975f46769b1ad9121b4223"}}
+                   :sha "bf0d29703e74d17c552b08c5d72b3740fda2e89d"}}
  
  :aliases {:charly
            {:main-opts
