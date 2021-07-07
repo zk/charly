@@ -128,6 +128,11 @@
   (ns/start-figwheel-server! env)
   (ns/start-node-proc! env))
 
+(defn start-node-dev! [{:keys [skip-nrepl] :as opts}]
+  (let [env (load-dev-env opts)]
+    (when-not (anom/? env)
+      (start-node-dev env))))
+
 (defn start-dev [{:keys [debug?] :as env}]
   (when debug?
     (ks/spy "ENV" env))
@@ -144,6 +149,16 @@
       (start-dev env)
       (when-not skip-nrepl
         (start-nrepl-server {})))))
+
+(defn start-web-dev! [{:keys [skip-nrepl] :as opts}]
+  (let [env (load-dev-env opts)]
+    (when-not (anom/? env)
+      (when (:debug? env)
+        (ks/spy "ENV" env))
+      (web/compile-dev env)
+      (watch/start-watchers! env)
+      (start-http-server env)
+      (start-figwheel-server env))))
 
 (defn compile-prod-web [env]
   (let [{:keys [prod-output-path]} env]
@@ -219,9 +234,13 @@
 
   (start-dev (load-dev-env {}))
 
+  (start-node-dev (load-dev-env {}))
+
   (start-http-server (load-dev-env {}))
 
   (start-figwheel-server (load-dev-env {}))
+
+  (web/compile-dev (load-dev-env {}))
 
   (build-prod-web! {})
 
@@ -232,6 +251,17 @@
   (cmd-write-github-actions {})
 
   (restart-api! {})
+
+  (keys @fmain/build-registry)
+
+  (keys (get @fmain/build-registry "charly-api-cljs"))
+
+  (ks/pp (:repl-env (get @fmain/build-registry "charly-api-cljs")))
+
+  (->> @fmain/build-registry
+       vals
+       (map :config)
+       ks/pp)
 
   ;; Repl API
 

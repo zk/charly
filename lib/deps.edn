@@ -4,9 +4,11 @@
          "../../rx-lib/src/cljs-browser"
          "../../rx-lib/src/cljc"
          ;; charly
-         "src/clj"]
+         "src/clj"
+         "src/cljs-browser"]
  :deps {zk/rx-lib {:git/url "https://github.com/zk/rx-lib"
-                   :sha "5d955bdeba69fa42a1840409a17536234e3579ab"}}
+                   :sha "b0d2f709ddb3c7be6e6fe57e274772224ee2f231"}
+        lambdaisland/glogi {:mvn/version "1.0.106"}}
  
  :aliases {:charly
            {:main-opts

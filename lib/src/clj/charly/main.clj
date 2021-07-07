@@ -6,9 +6,7 @@
             [charly.system :as sys]))
 
 (def cli-options
-  [[nil "--debug-cli" "Print cli options and exit"]
-   [nil "--repl-only" "Start repl only"]
-   ["-c" "--config CONFIG_PATH" "Path to charly config"]
+  [["-c" "--config CONFIG_PATH" "Path to charly config"]
    ["-s" "--skip-nrepl" "Skip starting nrepl server"]
    ["-d" "--dev" "Start dev"]
    ["-b" "--build" "Build prod to build/prod"]
@@ -16,7 +14,11 @@
    ["-h" "--help" "Show this usage description"]
    ["-a" "--build-api" "Build prod api to build/api/prod"]
    ["-e" "--deploy-api" "Build and deploy prod api"]
-   [nil  "--write-github-actions" "Write github actions"]])
+   [nil  "--write-github-actions" "Write github actions"]
+   [nil "--debug-cli" "Print cli options and exit"]
+   [nil "--repl-only" "Start repl only"]
+   [nil "--web-only" "Start web only"]
+   [nil "--api-only" "Start api only"]])
 
 (defn -main [& args]
   (let [{:keys [options summary errors] :as opts}
@@ -26,7 +28,9 @@
                 build-api
                 deploy-api
                 repl-only
-                debug-cli]} options]
+                debug-cli
+                web-only
+                api-only]} options]
     (cond
       debug-cli (do
                   (println "Provided CLI opts")
@@ -46,6 +50,10 @@
 
       deploy-api (do (sys/deploy-prod-api! options)
                      (System/exit 0))
+
+      web-only (sys/start-web-dev! options)
+
+      api-only (sys/start-node-dev! options)
       errors
       (do
         (doseq [s errors]

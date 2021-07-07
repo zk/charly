@@ -72,8 +72,8 @@
     (try
       (fapi/stop id)
       (catch Exception e
-        (prn e)
-        #_(ks/pn "Server already stopped")))))
+        #_(prn e)
+        (println "Server already stopped")))))
 
 (defn watch-dirs [{:keys [project-root]}]
   (->> [["src" "cljs-node"]
@@ -225,7 +225,8 @@
         {:id id
          :options (figwheel-compiler-opts opts)})
       (catch Exception e
-        (fmain/start-builds id)))))
+        (ks/pp e)
+        #_(fmain/start-builds id)))))
 
 (defn compile-prod-api [env & [opts]]
   (compile-prod-cljs env opts)
