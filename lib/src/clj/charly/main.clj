@@ -12,7 +12,7 @@
    ["-b" "--build" "Build prod to build/prod"]
    ["-v" "--verbose" "Print debug info to stdout"]
    ["-h" "--help" "Show this usage description"]
-   ["-a" "--build-api" "Build prod api to build/api/prod"]
+   ["-a" "--build-api" "Build prod api to build/prod/api"]
    ["-e" "--deploy-api" "Build and deploy prod api"]
    [nil  "--write-github-actions" "Write github actions"]
    [nil "--debug-cli" "Print cli options and exit"]
@@ -45,6 +45,7 @@
       dev (sys/start-dev! options)
       build (do (sys/build-prod-web! options)
                 (System/exit 0))
+      
       build-api (do (sys/build-prod-api! options)
                     (System/exit 0))
 

@@ -53,9 +53,9 @@
        :api-dev-output-path (concat-paths
                               [project-root build-path "api" "dev"])
        :prod-output-path (concat-paths
-                           [project-root build-path "prod"])
+                           [project-root build-path "prod" "site"])
        :api-prod-output-path (concat-paths
-                               [project-root build-path "api" "prod"])}
+                               [project-root build-path "prod" "api-lambda"])}
       config)))
 
 (defn expand-static-path [{:keys [project-root] :as config}]

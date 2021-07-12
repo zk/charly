@@ -108,7 +108,7 @@
 (defn compile-prod-cljs [{:keys [prod-output-path project-root client-cljs]
                           :as env}]
   (let [cljs-build-dir (cfg/concat-paths
-                         [project-root "build" "prod-cljs"])]
+                         [project-root "build" "prod" "web-cljs"])]
     (println "Compiling cljs...")
     (bapi/build
       (apply bapi/inputs (watch-dirs env))

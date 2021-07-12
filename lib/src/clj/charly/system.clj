@@ -180,6 +180,8 @@
   (println "\n")
   (println "Generating production build")
   (let [env (load-prod-env opts)]
+    (when (:verbose opts)
+      (ks/pp env))
     (when-not (anom/? env)
       (build-prod-web env)
       (println "*** Done generating production build"))))
@@ -187,17 +189,19 @@
 (defn compile-prod-api [{:keys [debug?] :as env}]
   (when debug?
     (ks/spy "ENV" env))
-  (let [{:keys [prod-output-path]} env]
-    (println gbs "Building prod api")
+  (let [{:keys [api-prod-output-path]} env]
+    (println gbs "Building prod api" api-prod-output-path)
     (ns/compile-prod-api env)))
 
 (defn build-prod-api! [opts]
-  (println "\n")
+    (println "\n")
   (println "Generating production API build")
   (let [env (load-prod-env opts)]
+    (when (:verbose opts)
+      (ks/pp env))
     (when-not (anom/? env)
       (compile-prod-api env)
-      (println "*** Done generating production build"))))
+      (println gbs "Done generating production build"))))
 
 (defn deploy-prod-api! [opts]
   (println "\n")
@@ -235,6 +239,8 @@
   (start-dev (load-dev-env {}))
 
   (start-node-dev (load-dev-env {}))
+
+  (ns/start-node-proc! (load-dev-env {}))
 
   (start-http-server (load-dev-env {}))
 

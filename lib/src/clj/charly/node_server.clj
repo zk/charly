@@ -46,9 +46,22 @@
       (ks/pn "Done.")
       (swap! !servers assoc-in [id :node-proc] nil))))
 
-(defn start-node-proc! [{:keys [id] :as opts}]
+(defn start-node-proc! [{:keys [id api-dev-env debug?] :as opts}]
   (let [id "cljs-api-repl"
-        {:keys [command]} (opts->node-opts opts)]
+        env-parts (->> api-dev-env
+                       (map slurp)
+                       (mapcat (fn [s]
+                                 (str/split s #"\n"))))
+        {:keys [command]} (opts->node-opts opts)
+
+        command (vec
+                  (concat
+                    ["env"]
+                    env-parts
+                    command))]
+    (when debug?
+      (println "node command" (pr-str command)))
+    
     (when-not command
       (anom/throw-anom
         {:desc "Node command missing"
@@ -118,7 +131,7 @@
                           :as env}
                          & [{:keys [verbose?]}]]
   (let [cljs-build-dir (config/concat-paths
-                         [project-root "build" "api" "prod-cljs"])
+                         [project-root "build" "prod" "api-cljs"])
 
         {:keys [prod-main]} api-cljs
 
@@ -205,8 +218,11 @@
   (let [zip-path (.getCanonicalPath
                    (io/as-file
                      (config/concat-paths
-                       [api-prod-output-path "../awslambda.zip"])))]
+                       [api-prod-output-path "../api/awslambda.zip"])))]
     (println "Creating" zip-path)
+    (build/mkdir
+      (config/concat-paths
+        [api-prod-output-path "../api"]))
     (build/zip
       api-prod-output-path
       zip-path)))
