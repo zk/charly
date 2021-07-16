@@ -193,15 +193,17 @@
     {:runtime-env (or (:runtime-env config) :prod)}))
 
 (defn config->env [config]
-  (-> config
-      expand-runtime-env
-      expand-project-root
-      expand-build-paths
-      expand-static-path
-      expand-routes
-      expand-css
-      expand-dev-server
-      expand-env-vars))
+  (merge
+    config
+    (-> config
+        expand-runtime-env
+        expand-project-root
+        expand-build-paths
+        expand-static-path
+        expand-routes
+        expand-css
+        expand-dev-server
+        expand-env-vars)))
 
 (defn read-env [path]
   (config->env (read-config path)))

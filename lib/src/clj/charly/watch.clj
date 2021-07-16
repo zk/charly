@@ -170,7 +170,7 @@
 (defn start-watchers [env]
   (let [ch (chan)]
     (hawk/watch!
-      {:watcher :polling}
+      (:hawk env)
       (concat
         (static-dirs env)
         (config-file env)

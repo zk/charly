@@ -143,6 +143,20 @@
   (when (start-node-dev? env)
     (start-node-dev env)))
 
+(comment
+  
+  (web/compile-dev (load-dev-env {}))
+  
+  (watch/start-watchers! (load-dev-env {}))
+  
+  (start-http-server env)
+  
+  (start-figwheel-server env)
+  
+  (start-node-dev env)
+
+  )
+
 (defn start-dev! [{:keys [skip-nrepl] :as opts}]
   (let [env (load-dev-env opts)]
     (when-not (anom/? env)
@@ -235,6 +249,8 @@
       (start-node-dev env))))
 
 (comment
+
+  (ks/pp (load-dev-env {}))
 
   (start-dev (load-dev-env {}))
 
