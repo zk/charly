@@ -34,7 +34,9 @@
 
 (defn load-env [opts]
   (let [path (or (:config opts) "./charly.edn")
-        config (cfg/read-config path)]
+        config (merge
+                 (cfg/read-config path)
+                 {:runtime-env (or (:runtime-env opts) :prod)})]
     (init-source-refresh config)
     (if (anom/? config)
       (do
@@ -50,9 +52,15 @@
           {:debug? (:vebose opts)})))))
 
 (defn load-dev-env [opts]
-  (merge
-    (load-env opts)
-    {:runtime-env :dev}))
+  (load-env
+    (merge opts
+      {:runtime-env :dev})))
+
+(comment
+
+  (load-dev-env {})
+
+  )
 
 (defn load-prod-env [opts]
   (merge
@@ -157,8 +165,12 @@
 
   )
 
-(defn start-dev! [{:keys [skip-nrepl] :as opts}]
+(defn start-dev! [{:keys [skip-nrepl verbose] :as opts}]
   (let [env (load-dev-env opts)]
+    (when verbose
+      (println "=== ENV MAP ===")
+      (ks/pp env)
+      (println "==============="))
     (when-not (anom/? env)
       (start-dev env)
       (when-not skip-nrepl

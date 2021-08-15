@@ -157,15 +157,13 @@
        (reduce merge)))
 
 (defn expand-env-vars [{:keys [project-root runtime-env] :as config}]
-  (let [dev-env-file-props (->> [".env"
-                                 ".env.dev"
-                                 ".env.dev.local"]
+  (let [dev-env-file-props (->> ["env/web/dev/default.env"
+                                 "env/web/dev/tf.env"]
                                 (map #(concat-paths
                                         [project-root %]))
                                 parse-env-paths)
-        prod-env-file-props (->> [".env"
-                                  ".env.prod"
-                                  ".env.prod.local"]
+        prod-env-file-props (->> ["env/web/build/default.env"
+                                  "env/web/build/tf.env"]
                                  (map #(concat-paths
                                          [project-root %]))
                                  parse-env-paths)
